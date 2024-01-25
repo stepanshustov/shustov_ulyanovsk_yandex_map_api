@@ -19,12 +19,14 @@ class Example(QMainWindow):
     def __init__(self):
         super().__init__()
         self.z = 9
+        self.x = 48.38668
+        self.y = 54.3282
         uic.loadUi('des.ui', self)
         self.repaint()
         self.info: QLabel
 
     def repaint(self):
-        map_request = f"http://static-maps.yandex.ru/1.x/?ll=48.38668,54.3282&z={self.z}&l=map"
+        map_request = f"http://static-maps.yandex.ru/1.x/?ll={self.x},{self.y}&z={self.z}&l=map"
         response = requests.get(map_request)
 
         if not response:
@@ -47,10 +49,12 @@ class Example(QMainWindow):
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_PageUp:
             self.z = min(self.z + 1, 21)
-            self.repaint()
+
         if event.key() == Qt.Key_PageDown:
             self.z = max(1, self.z - 1)
-            self.repaint()
+        if event.key() == Qt.Key_Right:
+            self.x += 1
+        self.repaint()
 
 
 if __name__ == '__main__':
