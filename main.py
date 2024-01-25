@@ -18,15 +18,13 @@ SCREEN_SIZE = [600, 450]
 class Example(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.z = 9
         uic.loadUi('des.ui', self)
-        self.getImage()
-        self.pixmap = QPixmap(self.map_file)
-        self.map.setPixmap(self.pixmap)
+        self.repaint()
         self.info: QLabel
-        self.info.setText("Ульяновск, тип карты: спутник, координаты: 48.38668,54.3282")
 
-    def getImage(self):
-        map_request = "http://static-maps.yandex.ru/1.x/?ll=48.38668,54.3282&spn=0.7,0.7&l=map"
+    def repaint(self):
+        map_request = f"http://static-maps.yandex.ru/1.x/?ll=48.38668,54.3282&z={self.z}&l=map"
         response = requests.get(map_request)
 
         if not response:
@@ -37,10 +35,22 @@ class Example(QMainWindow):
         self.map_file = "map.png"
         with open(self.map_file, "wb") as file:
             file.write(response.content)
+        self.pixmap = QPixmap(self.map_file)
+        self.map.setPixmap(self.pixmap)
+        self.info.setText(f"""Ульяновск, тип карты: спутник,
+координаты: 48.38668,54.3282, МАШТАБ : {self.z}""")
 
     def closeEvent(self, event):
         """При закрытии формы подчищаем за собой"""
         os.remove(self.map_file)
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_PageUp:
+            self.z = min(self.z + 1, 21)
+            self.repaint()
+        if event.key() == Qt.Key_PageDown:
+            self.z = max(1, self.z - 1)
+            self.repaint()
 
 
 if __name__ == '__main__':
