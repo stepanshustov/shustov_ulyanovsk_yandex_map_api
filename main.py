@@ -22,12 +22,24 @@ class Example(QMainWindow):
         self.x = 48.38668
         self.y = 54.3282
         uic.loadUi('des.ui', self)
-        self.repaint()
+        self.type: QComboBox
+        self.type.addItems(["схема", "спутник", "гибрид"])
+        self.type.currentTextChanged.connect(self.repaint)
         self.info: QLabel
+        self.d = {"схема": "map", "спутник": "sat ", "гибрид": "skl"}
+        self.repaint()
 
     def repaint(self):
-        map_request = f"http://static-maps.yandex.ru/1.x/?ll={self.x},{self.y}&z={self.z}&l=map"
-        response = requests.get(map_request)
+        self.type: QComboBox
+        print(self.d[self.type.currentText()])
+        params = {
+            "ll": f"{self.x},{self.y}",
+            "z": f"{self.z}",
+            "l": f"{self.d[self.type.currentText()]}"
+        }
+
+        map_request = f"http://static-maps.yandex.ru/1.x"
+        response = requests.get(map_request, params=params)
 
         if not response:
             print("Ошибка выполнения запроса:")
