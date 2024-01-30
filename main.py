@@ -40,7 +40,7 @@ class Example(QMainWindow):
         self.pixmap = QPixmap(self.map_file)
         self.map.setPixmap(self.pixmap)
         self.info.setText(f"""Ульяновск, тип карты: спутник,
-координаты: 48.38668,54.3282, МАШТАБ : {self.z}""")
+координаты: {self.x:.7},{self.y:.7}, МАШТАБ : {self.z}""")
 
     def closeEvent(self, event):
         """При закрытии формы подчищаем за собой"""
@@ -53,7 +53,22 @@ class Example(QMainWindow):
         if event.key() == Qt.Key_PageDown:
             self.z = max(1, self.z - 1)
         if event.key() == Qt.Key_Right:
-            self.x += 1
+            self.x += 5000 / self.z ** 5
+        if event.key() == Qt.Key_Left:
+            self.x -= 5000 / self.z ** 5
+        if event.key() == Qt.Key_Up:
+            self.y += 2050 / self.z ** 5
+        if event.key() == Qt.Key_Down:
+            self.y -= 2050 / self.z ** 5
+
+        self.x += 180
+        self.x %= 360
+        self.x -= 180
+
+        self.y += 90
+        self.y %= 180
+        self.y -= 90
+
         self.repaint()
 
 
